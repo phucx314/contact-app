@@ -1,0 +1,27 @@
+# Dependencies
+contact-nodejs/node_modules/
+contact-nodejs/npm-debug.log
+contact-nodejs/yarn-debug.log
+contact-nodejs/yarn-error.log
+
+# Environment variables
+contact-nodejs/.env
+contact-nodejs/.env.local
+contact-nodejs/.env.development.local
+contact-nodejs/.env.test.local
+contact-nodejs/.env.production.local
+
+# Build directories
+contact-nodejs/dist/
+contact-nodejs/build/
+contact-nodejs/.next/
+
+# IDE and editor files
+contact-nodejs/.idea/
+contact-nodejs/.vscode/
+contact-nodejs/*.swp
+contact-nodejs/*.swo
+
+# Logs
+contact-nodejs/logs/
+contact-nodejs/*.log
