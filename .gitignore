@@ -25,3 +25,47 @@ contact-nodejs/*.swo
 # Logs
 contact-nodejs/logs/
 contact-nodejs/*.log
+
+# Miscellaneous
+*.class
+*.log
+*.pyc
+*.swp
+contact_flutter/.DS_Store
+contact_flutter/.atom/
+contact_flutter/.buildlog/
+contact_flutter/.history
+contact_flutter/.svn/
+contact_flutter/migrate_working_dir/
+
+# IntelliJ related
+*.iml
+*.ipr
+*.iws
+contact_flutter/.idea/
+
+# The .vscode folder contains launch configuration and tasks you configure in
+# VS Code which you may wish to be included in version control, so this line
+# is commented out by default.
+#.vscode/
+
+# Flutter/Dart/Pub related
+**/doc/api/
+**/ios/Flutter/.last_build_id
+contact_flutter/.dart_tool/
+contact_flutter/.flutter-plugins
+contact_flutter/.flutter-plugins-dependencies
+contact_flutter/.pub-cache/
+contact_flutter/.pub/
+contact_flutter//build/
+
+# Symbolication related
+contact_flutter/app.*.symbols
+
+# Obfuscation related
+contact_flutter/app.*.map.json
+
+# Android Studio will place build artifacts here
+contact_flutter//android/app/debug
+contact_flutter//android/app/profile
+contact_flutter//android/app/release
