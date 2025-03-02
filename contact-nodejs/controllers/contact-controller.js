@@ -55,6 +55,16 @@ getContacts = async (req, res) => {
     }
 };
 
+// lấy dsach contacts group theo năm sinh
+
+// lấy dsach contacts group theo tháng sinh
+
+// lấy dsach contacts group theo tag (1 tag thôi)
+
+// lọc dsach contacts chưa có sđt
+
+// lấy dsach contacts yêu thích
+
 // thêm contact mới
 createNewContact = async (req, res) => {
     try {
@@ -77,6 +87,8 @@ editContact = async (req, res) => {
     }
 };
 
+// toggle favorite (add contact vô dsach yêu thích thông qua update isFavorite) (dùng PATCH thay vì PUT)
+
 // xoá contact
 deleteOneContact = async (req, res) => {
     try {
@@ -86,6 +98,10 @@ deleteOneContact = async (req, res) => {
         res.status(400).json({message: 'Delete Failed'});
     }
 };
+
+// xoá contacts được chọn
+
+// xoá all contacts
 
 // export ở đây
 module.exports = {
