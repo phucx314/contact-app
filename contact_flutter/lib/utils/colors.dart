@@ -6,7 +6,8 @@ class MyColors {
   static const Color backgroundColor = Color(0xFF111111);
   static const Color backgroundSecondaryColor = Color(0xFF1f1f1f);
   static const Color textColor = Color(0xFFFEF5FF);
-  static const Color textSecondaryColor = Color(0xFFc3c3c3);
+  static Color textSecondaryColor = const Color(0xFFfef5ff).withOpacity(0.1);
+  // static const Color textSecondaryColor = Color(0xFFc3c3c3);
   static Color white50 = const Color(0xFFfef5ff).withOpacity(0.5);
   static Color white25 = const Color(0xFFfef5ff).withOpacity(0.25);
 }

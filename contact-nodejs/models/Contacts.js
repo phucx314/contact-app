@@ -52,6 +52,11 @@ const ContactSchema = new mongoose.Schema({
     birthday: { type: Date },
     socialNetworks: [SocialNetworkSchema],
     homeAddresses: [HomeAddressSchema],
+    label: {
+        type: String,
+        enum: ['Family', 'Friend', 'Neighborhood', 'Work', 'Other'],
+        default: 'Other',
+    },
     tags: [String],
     isFavorite: {type: Boolean, default: false},
 }, {

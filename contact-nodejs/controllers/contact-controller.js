@@ -55,6 +55,25 @@ getContacts = async (req, res) => {
     }
 };
 
+// lấy dsach contacts group theo chữ cái đầu
+getContactsGroupedByFirstLetter = async (req, res) => {
+    try {
+        const contacts = await Contact.find().sort({name: 1}); // name: 1 (1 ở đây là sort asc, -1 là desc)
+
+        const groupedContacts = {};
+        contacts.forEach(contacts => {
+            const firstLetter = contacts.name[0].toUpperCase(); // lấy letter đầu ở dạng viết hoa
+            if (!groupedContacts[firstLetter]) {
+                groupedContacts[firstLetter] = []; // nếu chưa có letter đó trong grouped contacts thì tạo 1 mảng contact mới để lưu contacts có first letter đó
+            }
+            groupedContacts[firstLetter].push(contacts); // đưa contact có chung first letter vào mảng
+        });
+        res.json(groupedContacts);
+    } catch (error) {
+        res.status(500).json({error: 'Internal Server Error'});
+    }
+};
+
 // lấy dsach contacts group theo năm sinh
 
 // lấy dsach contacts group theo tháng sinh
@@ -64,6 +83,8 @@ getContacts = async (req, res) => {
 // lọc dsach contacts chưa có sđt
 
 // lấy dsach contacts yêu thích
+
+// tìm kiếm contacts theo tên, phonenums, emails, home addresses, description, tags, labels, social networks,... nchung là all
 
 // thêm contact mới
 createNewContact = async (req, res) => {
@@ -106,6 +127,7 @@ deleteOneContact = async (req, res) => {
 // export ở đây
 module.exports = {
     getContacts,
+    getContactsGroupedByFirstLetter,
     createNewContact,
     editContact,
     deleteOneContact,
