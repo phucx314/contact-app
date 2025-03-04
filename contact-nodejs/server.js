@@ -2,7 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const logger = require('./middleware/logger');
-const contactRoutes = require('./routes/contactRoutes');
+const contactRoutes = require('./routes/contact-routes');
 const connectDB = require('./config/db');
 
 // khởi tạo app express trước

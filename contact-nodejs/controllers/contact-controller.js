@@ -1,9 +1,9 @@
-const Contact = require('../models/Contacts');
+const Contacts = require('../models/Contacts');
 
 // // lấy danh sách contacts
 // exports.getContacts = async (req, res) => {
 //     try {
-//         const contacts = await Contact.find(); // find() trong mông để lấy tất cả dữ liệu từ MongoDB (ở đây là lấy all data từ collection contacts)
+//         const contacts = await Contacts.find(); // find() trong mông để lấy tất cả dữ liệu từ MongoDB (ở đây là lấy all data từ collection contacts)
 //         res.json(contacts);
 //     } catch (error) {
 //         res.status(500).json({message: 'Server Error'});
@@ -14,7 +14,7 @@ const Contact = require('../models/Contacts');
 // exports.createNewContact = async (req, res) => {
 //     try {
 //         const {name, phoneNumber, email} = req.body;
-//         const newContact = new Contact({name, phoneNumber, email});
+//         const newContact = new Contacts({name, phoneNumber, email});
 //         await newContact.save(); // để lưu một document mới vào MongoDB bằng Mongoose
 //         res.status(201).json(newContact);
 //     } catch (error) {
@@ -25,7 +25,7 @@ const Contact = require('../models/Contacts');
 // // sửa contact
 // exports.editContact = async (req, res) => {
 //     try {
-//         const updatedContact = await Contact.findByIdAndUpdate(req.params.id, req.body, {new: true}); // để tìm và cập nhật một document trong MongoDB dựa trên _id | { new: true } → Trả về document đã cập nhật thay vì document cũ
+//         const updatedContact = await Contacts.findByIdAndUpdate(req.params.id, req.body, {new: true}); // để tìm và cập nhật một document trong MongoDB dựa trên _id | { new: true } → Trả về document đã cập nhật thay vì document cũ
 //         res.json(updatedContact);
 //     } catch (error) {
 //         res.status(400).json({message: 'Update Failed'});
@@ -35,7 +35,7 @@ const Contact = require('../models/Contacts');
 // // xoá contact
 // exports.deleteOneContact = async (req, res) => {
 //     try {
-//         await Contact.findByIdAndDelete(req.params.id);
+//         await Contacts.findByIdAndDelete(req.params.id);
 //         res.json({message: 'Contact Deleted'});
 //     } catch (error) {
 //         res.status(400).json({message: 'Delete Failed'});
@@ -45,89 +45,223 @@ const Contact = require('../models/Contacts');
 // xuất ở trên rồi nên ko cần xuất nữa
 // hoặc viết lại như này rồi export:
 
-// lấy danh sách contacts
+// GET: lấy danh sách contacts
 getContacts = async (req, res) => {
     try {
-        const contacts = await Contact.find(); // find() trong mông để lấy tất cả dữ liệu từ MongoDB (ở đây là lấy all data từ collection contacts)
-        res.json(contacts);
+        const contacts = await Contacts.find(); // find() trong mông để lấy tất cả dữ liệu từ MongoDB (ở đây là lấy all data từ collection contacts)
+        const response = contacts.map(contact => ({
+            id: contact._id,
+            name: contact.name,
+            tags: contact.tags,
+            description: contact.description,
+            // phoneNumbers: contact.phoneNumbers,
+            isFavorite: contact.isFavorite,
+        }));
+        res.json(response);
     } catch (error) {
         res.status(500).json({message: 'Server Error'});
     }
 };
 
-// lấy dsach contacts group theo chữ cái đầu
+// GET: lấy dsach contacts group theo chữ cái đầu
 getContactsGroupedByFirstLetter = async (req, res) => {
     try {
-        const contacts = await Contact.find().sort({name: 1}); // name: 1 (1 ở đây là sort asc, -1 là desc)
+        const contacts = await Contacts.find().sort({name: 1}); // name: 1 (1 ở đây là sort asc, -1 là desc)
+
+        const response = contacts.map(contact => ({
+            id: contact._id,
+            name: contact.name,
+            tags: contact.tags,
+            description: contact.description,
+            // phoneNumbers: contact.phoneNumbers,
+            isFavorite: contact.isFavorite,
+        }));
 
         const groupedContacts = {};
-        contacts.forEach(contacts => {
-            const firstLetter = contacts.name[0].toUpperCase(); // lấy letter đầu ở dạng viết hoa
+        response.forEach(contact => {
+            const firstLetter = contact.name[0].toUpperCase(); // lấy letter đầu ở dạng viết hoa
             if (!groupedContacts[firstLetter]) {
                 groupedContacts[firstLetter] = []; // nếu chưa có letter đó trong grouped contacts thì tạo 1 mảng contact mới để lưu contacts có first letter đó
             }
-            groupedContacts[firstLetter].push(contacts); // đưa contact có chung first letter vào mảng
+            groupedContacts[firstLetter].push(contact); // đưa contact có chung first letter vào mảng
         });
+        
         res.json(groupedContacts);
     } catch (error) {
         res.status(500).json({error: 'Internal Server Error'});
     }
 };
 
-// lấy dsach contacts group theo năm sinh
-
-// lấy dsach contacts group theo tháng sinh
-
-// lấy dsach contacts group theo tag (1 tag thôi)
-
-// lọc dsach contacts chưa có sđt
-
-// lấy dsach contacts yêu thích
-
-// tìm kiếm contacts theo tên, phonenums, emails, home addresses, description, tags, labels, social networks,... nchung là all
-
-// thêm contact mới
-createNewContact = async (req, res) => {
+// GET: lấy dsach contacts có cùng năm sinh
+getContactsByYearOfBirth = async (req, res) => {
     try {
-        const {name, phoneNumber, email} = req.body;
-        const newContact = new Contact({name, phoneNumber, email});
-        await newContact.save(); // để lưu một document mới vào MongoDB bằng Mongoose
-        res.status(201).json(newContact);
+        const year = parseInt(req.params.year);
+
+        if (isNaN(year)) {
+            return res.status(404).json({error: 'Invalid Year Parameter'});
+        }
+
+        const startOfYear = new Date(Date.UTC(year, 0, 1)); // 1 tháng 1 năm year
+        const endOfYear = new Date(Date.UTC(year + 1, 0, 1)); // 1 tháng 1 năm sau (vì nó sẽ lấy đến 00h ngày 1/1)
+
+        const contacts = await Contacts.find({
+            birthday: {
+                $gte: startOfYear, // gte = greater than or equal to
+                $lt: endOfYear, // lý do dùng 1/1 năm sau (lt = less than => lấy đến hết 31/12)
+            }
+        });
+
+        const response = contacts.map(contact => ({
+            id: contact._id,
+            name: contact.name,
+            tags: contact.tags,
+            description: contact.description,
+            // phoneNumbers: contact.phoneNumbers,
+            isFavorite: contact.isFavorite,
+            description: contact.birthday ? contact.birthday.toISOString().split('T')[0] : null, // format yyyy-mm-dd
+        }));
+
+        res.json(response);
     } catch (error) {
-        res.status(400).json({message: 'Invalid Data'});
+        res.status(500).json({error: 'Internal Server Error'});
     }
 };
 
-// sửa contact
+// GET: lấy dsach contacts có cùng tháng sinh
+getContactsByMonthOfBirth = async (req, res) => {
+    try {
+        const month = parseInt(req.params.month);
+
+        if(isNaN(month) || month < 1 || month > 12) {
+            return res.status(404).json({error: 'Invalid Month Parameter'});
+        }
+
+        const contacts = await Contacts.find({
+            birthday: {
+                $exists: true, // đảm bảo birthday tồn tại
+                $ne: null, // và đảm bảo birthday ko null (ne = not equal)
+            }
+        });
+
+        const filteredContacts = contacts.filter(contact => {
+            const contactMonth = contact.birthday.getUTCMonth() + 1; // getUTCMonth() trả về 0-11 => phải cộng thêm 1 cho đúng số tháng
+            return contactMonth === month; // true thì filter nhận contact, false thì loại
+        });
+
+        const response = filteredContacts.map(contact => ({
+            id: contact._id,
+            name: contact.name,
+            tags: contact.tags,
+            description: contact.description,
+            // phoneNumbers: contact.phoneNumbers,
+            isFavorite: contact.isFavorite,
+            description: contact.birthday ? contact.birthday.toISOString().split('T')[0] : null, // format yyyy-mm-dd
+        }));
+
+        res.json(response);
+    } catch (error) {
+        res.status(500).json({error: 'Internal Server Error'});
+    }
+};
+
+// GET: lấy dsach contacts có cùng tag (1 tag thôi)
+
+// GET: lọc dsach contacts chưa có sđt
+
+// GET: lấy dsach contacts yêu thích
+
+// GET: lấy thông tin của 1 contact
+getContactInformation = async (req, res) => {
+    try {
+        const contact = await Contacts.findById(req.params.id);
+
+        if (!contact) {
+            return res.status(404).json({error: 'Contact Not Found'});
+        }
+
+        res.json(contact);
+    } catch (error) {
+        res.status(500).json({message: 'Internal Server Error'});
+    }
+};
+
+// GET: tìm kiếm contacts theo tên, phonenums, emails, home addresses, description, tags, labels, social networks,... nchung là all
+
+// POST: thêm contact mới
+createNewContact = async (req, res) => {
+    try {
+        const {
+            name,
+            description,
+            phoneNumbers = [],
+            emails = [],
+            birthday,
+            socialNetworks = [],
+            homeAddresses = [],
+            label,
+            tags = [],
+            isFavorite = false
+        } = req.body;
+
+        // Ensure birthday is properly formatted
+        const parsedBirthday = birthday ? new Date(birthday) : null;
+        
+        const newContact = new Contacts({
+            name,
+            description,
+            phoneNumbers,
+            emails,
+            birthday: parsedBirthday, // Ensure it's a Date
+            socialNetworks,
+            homeAddresses,
+            label,
+            tags,
+            isFavorite
+        });
+
+        await newContact.save(); // để lưu một document mới vào MongoDB bằng Mongoose
+        res.status(201).json(newContact);
+    } catch (error) {
+        console.error("Error creating contact:", error);
+        res.status(400).json({ message: 'Invalid Data' });
+    }
+};
+
+// POST: thêm nhiều contacts mới (để test thôi chứ fe ko nối)
+
+// UPDATE: sửa contact
 editContact = async (req, res) => {
     try {
-        const updatedContact = await Contact.findByIdAndUpdate(req.params.id, req.body, {new: true}); // để tìm và cập nhật một document trong MongoDB dựa trên _id | { new: true } → Trả về document đã cập nhật thay vì document cũ
+        const updatedContact = await Contacts.findByIdAndUpdate(req.params.id, req.body, {new: true}); // để tìm và cập nhật một document trong MongoDB dựa trên _id | { new: true } → Trả về document đã cập nhật thay vì document cũ
         res.json(updatedContact);
     } catch (error) {
         res.status(400).json({message: 'Update Failed'});
     }
 };
 
-// toggle favorite (add contact vô dsach yêu thích thông qua update isFavorite) (dùng PATCH thay vì PUT)
+// PATCH: toggle favorite (add contact vô dsach yêu thích thông qua update isFavorite) (dùng PATCH thay vì PUT)
 
-// xoá contact
+// DELETE: xoá contact
 deleteOneContact = async (req, res) => {
     try {
-        await Contact.findByIdAndDelete(req.params.id);
+        await Contacts.findByIdAndDelete(req.params.id);
         res.json({message: 'Contact Deleted'});
     } catch (error) {
         res.status(400).json({message: 'Delete Failed'});
     }
 };
 
-// xoá contacts được chọn
+// DELETE: xoá contacts được chọn
 
-// xoá all contacts
+// DELETE: xoá all contacts
 
 // export ở đây
 module.exports = {
     getContacts,
     getContactsGroupedByFirstLetter,
+    getContactsByYearOfBirth,
+    getContactsByMonthOfBirth,
+    getContactInformation,
     createNewContact,
     editContact,
     deleteOneContact,
