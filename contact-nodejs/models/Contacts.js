@@ -46,14 +46,15 @@ const HomeAddressSchema = new mongoose.Schema({
 
 const ContactSchema = new mongoose.Schema({
     name: { type: String, required: true },
+    avatar: {type: String},
     description: {type: String},
     phoneNumbers: [PhoneNumberSchema],
     emails: [EmailSchema],
     birthday: { type: Date },
     socialNetworks: [SocialNetworkSchema],
     homeAddresses: [HomeAddressSchema],
-    label: {
-        type: String,
+    labels: {
+        type: [String],
         enum: ['Family', 'Friend', 'Neighborhood', 'Work', 'Other'],
         default: 'Other',
     },

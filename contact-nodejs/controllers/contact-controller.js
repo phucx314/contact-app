@@ -51,8 +51,9 @@ getContacts = async (req, res) => {
         const contacts = await Contacts.find(); // find() trong mông để lấy tất cả dữ liệu từ MongoDB (ở đây là lấy all data từ collection contacts)
         const response = contacts.map(contact => ({
             id: contact._id,
+            avatar: contact.avatar,
             name: contact.name,
-            tags: contact.tags,
+            labels: contact.labels,
             description: contact.description,
             // phoneNumbers: contact.phoneNumbers,
             isFavorite: contact.isFavorite,
@@ -70,8 +71,9 @@ getContactsGroupedByFirstLetter = async (req, res) => {
 
         const response = contacts.map(contact => ({
             id: contact._id,
+            avatar: contact.avatar,
             name: contact.name,
-            tags: contact.tags,
+            labels: contact.labels,
             description: contact.description,
             // phoneNumbers: contact.phoneNumbers,
             isFavorite: contact.isFavorite,
@@ -113,8 +115,9 @@ getContactsByYearOfBirth = async (req, res) => {
 
         const response = contacts.map(contact => ({
             id: contact._id,
+            avatar: contact.avatar,
             name: contact.name,
-            tags: contact.tags,
+            labels: contact.labels,
             description: contact.description,
             // phoneNumbers: contact.phoneNumbers,
             isFavorite: contact.isFavorite,
@@ -150,8 +153,9 @@ getContactsByMonthOfBirth = async (req, res) => {
 
         const response = filteredContacts.map(contact => ({
             id: contact._id,
+            avatar: contact.avatar,
             name: contact.name,
-            tags: contact.tags,
+            labels: contact.labels,
             description: contact.description,
             // phoneNumbers: contact.phoneNumbers,
             isFavorite: contact.isFavorite,
@@ -192,13 +196,14 @@ createNewContact = async (req, res) => {
     try {
         const {
             name,
+            avatar,
             description,
             phoneNumbers = [],
             emails = [],
             birthday,
             socialNetworks = [],
             homeAddresses = [],
-            label,
+            labels = [],
             tags = [],
             isFavorite = false
         } = req.body;
@@ -208,13 +213,14 @@ createNewContact = async (req, res) => {
         
         const newContact = new Contacts({
             name,
+            avatar,
             description,
             phoneNumbers,
             emails,
             birthday: parsedBirthday, // Ensure it's a Date
             socialNetworks,
             homeAddresses,
-            label,
+            labels,
             tags,
             isFavorite
         });
@@ -262,8 +268,6 @@ editContact = async (req, res) => {
     }
 };
 
-// PATCH: toggle favorite (add contact vô dsach yêu thích thông qua update isFavorite)
-
 // DELETE: xoá contact
 deleteOneContact = async (req, res) => {
     try {
@@ -297,5 +301,5 @@ module.exports = {
     addMultipleContacts,
     editContact,
     deleteOneContact,
-    deleteAllContact,
+    deleteAllContacts,
 };

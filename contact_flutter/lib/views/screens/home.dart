@@ -1,10 +1,13 @@
 // ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors
 
 import 'package:contact_flutter/utils/colors.dart';
+import 'package:contact_flutter/viewmodels/home_vm.dart';
 import 'package:contact_flutter/views/components/cta_button.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:tabler_icons/tabler_icons.dart';
 
+import '../../models/contact_model.dart';
 import '../components/contact_item.dart';
 
 class Home extends StatelessWidget {
@@ -18,6 +21,7 @@ class Home extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // var statusBarHeight = MediaQuery.of(context).padding.top;
+    HomeVm homeVm = Provider.of<HomeVm>(context);
 
     return Scaffold(
       floatingActionButton: CtaButton(
@@ -160,11 +164,14 @@ class Home extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: Column(
                     children: [
+                      !homeVm.isLoading ?
                       ListView.builder(
                         shrinkWrap: true,
                         physics: NeverScrollableScrollPhysics(),
-                        itemCount: 5,
-                        itemBuilder: (context, index) {
+                        itemCount: homeVm.contactListModelMap.contacts.length,
+                        itemBuilder: (context, index1) {
+                          final String contactGroup = homeVm.contactListModelMap.contacts.keys.elementAt(index1);
+                          final List<ContactModel> contacts = homeVm.contactListModelMap.contacts[contactGroup] ?? [];
                           return Column(
                             children: [
                               Padding(
@@ -173,7 +180,7 @@ class Home extends StatelessWidget {
                                 child: Align(
                                   alignment: Alignment.centerLeft,
                                   child: Text(
-                                    'A',
+                                    contactGroup.toString(), // LẤY ĐƯỢC RỒI
                                     style: TextStyle(color: MyColors.white25),
                                   ),
                                 ),
@@ -181,15 +188,18 @@ class Home extends StatelessWidget {
                               ListView.builder(
                                 shrinkWrap: true,
                                 physics: NeverScrollableScrollPhysics(),
-                                itemCount: 4,
+                                itemCount: contacts.length,
                                 padding: const EdgeInsets.only(bottom: 15),
-                                itemBuilder: (context, index) {
+                                itemBuilder: (context, index2) {
+                                  final contact = contacts[index2];
                                   return Padding(
                                     padding:
                                         const EdgeInsets.symmetric(vertical: 3),
                                     child: ContactItem(
-                                      name: 'Name of CONTACT',
-                                      description: 'LOL',
+                                      name: contact.name,
+                                      avatar: contact.avatar,
+                                      description: contact.description,
+                                      labels: contact.labels,
                                     ),
                                   );
                                 },
@@ -197,7 +207,7 @@ class Home extends StatelessWidget {
                             ],
                           );
                         },
-                      ),
+                      ) : Center(child: CircularProgressIndicator()),
                       SizedBox(height: 60),
                     ],
                   ),

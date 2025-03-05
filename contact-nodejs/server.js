@@ -4,6 +4,7 @@ const cors = require('cors');
 const logger = require('./middleware/logger');
 const contactRoutes = require('./routes/contact-routes');
 const connectDB = require('./config/db');
+const http = require('http'); // Import the http module
 
 // khởi tạo app express trước
 const app = express();
@@ -19,4 +20,13 @@ connectDB();
 app.use('/api/contacts', contactRoutes);
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Server is running on port ${PORT}`));
+
+// Create the server using the http module
+const server = http.createServer(app);
+
+// Set the timeout duration (e.g., 30 seconds)
+server.setTimeout(30000, () => {
+    console.log('Request timed out');
+});
+
+app.listen(PORT, '0.0.0.0', () => console.log(`Server is running on port ${PORT}`));

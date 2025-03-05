@@ -8,11 +8,11 @@ import 'package:tabler_icons/tabler_icons.dart';
 class ContactItem extends StatefulWidget {
   ContactItem({
     super.key,
-    this.avatar =
-        'https://sbcf.fr/wp-content/uploads/2018/03/sbcf-default-avatar.png',
+    required this.avatar,
     required this.name,
-    this.description = '',
-    this.hasLabels = false,
+    this.description,
+    this.labels,
+    // this.hasLabels = false,
     this.isSelected = false,
     this.isFavorite = false,
     this.isOffline = false,
@@ -20,8 +20,9 @@ class ContactItem extends StatefulWidget {
 
   final String avatar;
   final String name;
-  final String description;
-  final bool hasLabels;
+  final String? description;
+  final List<String>? labels;
+  // final bool hasLabels;
   bool isSelected;
   bool isFavorite;
   bool isOffline;
@@ -73,7 +74,12 @@ class _ContactItemState extends State<ContactItem> {
           child: Row(
             children: [
               ClipOval(
-                child: Image.network(widget.avatar), // cần xử lý để offline
+                child: Image.network(
+                  widget.avatar,
+                  height: 50,
+                  width: 50,
+                  fit: BoxFit.cover,
+                ), // cần xử lý để offline
               ),
               SizedBox(
                 width: 10,
@@ -96,20 +102,19 @@ class _ContactItemState extends State<ContactItem> {
                         SizedBox(
                           width: 5,
                         ),
-                        if (true)
+                        if (widget.labels!.isNotEmpty)
                           SizedBox(
                             height: 15,
                             child: ListView.builder(
                               shrinkWrap: true,
-                              itemCount: 2,
+                              itemCount: widget.labels!.length,
                               scrollDirection: Axis.horizontal,
                               physics: NeverScrollableScrollPhysics(),
                               itemBuilder: (context, index) {
                                 return Row(
                                   children: [
                                     ChipItem(
-                                      label: 'Family',
-                                      isSelected: widget.isSelected,
+                                      label: widget.labels![index],
                                     ),
                                     SizedBox(
                                       width: 5,
@@ -121,11 +126,11 @@ class _ContactItemState extends State<ContactItem> {
                           ),
                       ],
                     ),
-                    if (widget.description != '')
+                    if (widget.description != null)
                       Align(
                         alignment: Alignment.centerLeft,
                         child: Text(
-                          widget.description,
+                          widget.description ?? '',
                           style: TextStyle(
                             fontSize: 10,
                             color: (widget.isSelected)
