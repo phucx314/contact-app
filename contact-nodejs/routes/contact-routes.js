@@ -9,7 +9,9 @@ router.get('/get-contacts-grouped-by-yob/:year', contactController.getContactsBy
 router.get('/get-contacts-grouped-by-mob/:month', contactController.getContactsByMonthOfBirth);
 router.get('/get-contact-infomation/:id', contactController.getContactInformation);
 router.post('/create-new-contact', contactController.createNewContact);
-router.put('/edit-contact/:id', contactController.editContact);
+router.post('/create-multiple-contacts', contactController.addMultipleContacts);
+router.patch('/edit-contact/:id', contactController.editContact);
 router.delete('/delete-one-contact/:id', contactController.deleteOneContact);
+router.delete('/delete-all-contact', contactController.deleteAllContact);
 
 module.exports = router;

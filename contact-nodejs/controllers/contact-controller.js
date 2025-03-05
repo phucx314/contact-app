@@ -222,14 +222,37 @@ createNewContact = async (req, res) => {
         await newContact.save(); // để lưu một document mới vào MongoDB bằng Mongoose
         res.status(201).json(newContact);
     } catch (error) {
-        console.error("Error creating contact:", error);
         res.status(400).json({ message: 'Invalid Data' });
     }
 };
 
 // POST: thêm nhiều contacts mới (để test thôi chứ fe ko nối)
+addMultipleContacts = async (req, res) => {
+    try {
+        const listOfContacts = req.body.contacts;
 
-// UPDATE: sửa contact
+        if (!Array.isArray(listOfContacts) || listOfContacts.length === 0) { // nếu ko phải array contacts hoặc là array trống
+            return res.status(400).json({ message: 'Invalid Data' }); // thì sẽ trả về 400
+        }
+
+        // đảm bảo all birthdays phải đúng định dạng
+        const formattedContacts = listOfContacts.map(contact => ({
+            ...contact, // cú pháp spread, để sao chép tất cả các thuộc tính của đối tượng contact vào đối tượng mới
+            birthday: contact.birthday ? new Date(contact.birthday) : null,
+        }));
+
+        const newContacts = await Contacts.insertMany(formattedContacts);
+        console.log(newContacts);
+        
+
+        res.status(201).json(newContacts);
+    } catch (error) {
+        console.log(`error: ${error}`);
+        res.status(400).json({ message: 'Invalid Data' });
+    }
+};
+
+// PATCH: sửa contact
 editContact = async (req, res) => {
     try {
         const updatedContact = await Contacts.findByIdAndUpdate(req.params.id, req.body, {new: true}); // để tìm và cập nhật một document trong MongoDB dựa trên _id | { new: true } → Trả về document đã cập nhật thay vì document cũ
@@ -239,7 +262,7 @@ editContact = async (req, res) => {
     }
 };
 
-// PATCH: toggle favorite (add contact vô dsach yêu thích thông qua update isFavorite) (dùng PATCH thay vì PUT)
+// PATCH: toggle favorite (add contact vô dsach yêu thích thông qua update isFavorite)
 
 // DELETE: xoá contact
 deleteOneContact = async (req, res) => {
@@ -254,6 +277,14 @@ deleteOneContact = async (req, res) => {
 // DELETE: xoá contacts được chọn
 
 // DELETE: xoá all contacts
+deleteAllContacts = async (req, res) => {
+    try {
+        await Contacts.deleteMany();
+        res.json({message: 'All Contacts Deleted'});
+    } catch (error) {
+        res.status(500).json({message: 'Internal Server Error'});
+    }
+}
 
 // export ở đây
 module.exports = {
@@ -263,6 +294,8 @@ module.exports = {
     getContactsByMonthOfBirth,
     getContactInformation,
     createNewContact,
+    addMultipleContacts,
     editContact,
     deleteOneContact,
+    deleteAllContact,
 };
