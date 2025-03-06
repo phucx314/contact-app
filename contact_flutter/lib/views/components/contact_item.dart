@@ -79,6 +79,9 @@ class _ContactItemState extends State<ContactItem> {
                   height: 50,
                   width: 50,
                   fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) {
+                    return Image.network('https://www.veryicon.com/download/png/business/new-vision-2/picture-loading-failed-1?s=256');
+                  },
                 ), // cần xử lý để offline
               ),
               SizedBox(
@@ -107,7 +110,7 @@ class _ContactItemState extends State<ContactItem> {
                             height: 15,
                             child: ListView.builder(
                               shrinkWrap: true,
-                              itemCount: widget.labels!.length,
+                              itemCount: widget.labels!.length > 2 ? 2 : widget.labels!.length,
                               scrollDirection: Axis.horizontal,
                               physics: NeverScrollableScrollPhysics(),
                               itemBuilder: (context, index) {
@@ -115,6 +118,7 @@ class _ContactItemState extends State<ContactItem> {
                                   children: [
                                     ChipItem(
                                       label: widget.labels![index],
+                                      isSelected: widget.isSelected,
                                     ),
                                     SizedBox(
                                       width: 5,

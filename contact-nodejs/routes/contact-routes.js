@@ -4,7 +4,9 @@ const contactController = require('../controllers/contact-controller');
 const router = express.Router();
 
 router.get('/get-contacts', contactController.getContacts);
+router.get('/get-total-contacts', contactController.getNumberOfContacts);
 router.get('/get-contacts-grouped-by-first-letter', contactController.getContactsGroupedByFirstLetter);
+router.get('/get-contacts-grouped-by-first-letter-paginated', contactController.getContactsGroupedByFirstLetterPaginated);
 router.get('/get-contacts-grouped-by-yob/:year', contactController.getContactsByYearOfBirth);
 router.get('/get-contacts-grouped-by-mob/:month', contactController.getContactsByMonthOfBirth);
 router.get('/get-contact-infomation/:id', contactController.getContactInformation);

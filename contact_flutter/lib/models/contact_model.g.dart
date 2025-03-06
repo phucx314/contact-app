@@ -44,7 +44,7 @@ Map<String, dynamic> _$ContactModelToJson(ContactModel instance) =>
 ContactListModelByFirstLetter _$ContactListModelByFirstLetterFromJson(
         Map<String, dynamic> json) =>
     ContactListModelByFirstLetter(
-      contacts: (json).map(
+      contacts: (json['contacts'] as Map<String, dynamic>).map(
         (k, e) => MapEntry(
             k,
             (e as List<dynamic>)

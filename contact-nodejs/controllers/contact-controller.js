@@ -64,6 +64,20 @@ getContacts = async (req, res) => {
     }
 };
 
+// GET: tổng contacts
+getNumberOfContacts = async (req, res) => {
+    try {
+        const contactsCount = await Contacts.countDocuments();
+        const response = {
+            data: contactsCount,
+        }
+
+        res.json(response);
+    } catch (error) {
+        res.status(500).json({error: "Internal Server Error"});
+    }
+}
+
 // GET: lấy dsach contacts group theo chữ cái đầu
 getContactsGroupedByFirstLetter = async (req, res) => {
     try {
@@ -93,6 +107,52 @@ getContactsGroupedByFirstLetter = async (req, res) => {
         res.status(500).json({error: 'Internal Server Error'});
     }
 };
+
+// GET: lấy dsach contacts group theo chữ cái đầu (có pagination)
+getContactsGroupedByFirstLetterPaginated = async (req, res) => {
+    try {
+        let {page = 1, limit = 50} = req.query; // 50 contacts mỗi page
+        page = parseInt(page);
+        limit = parseInt(limit);
+
+        const totalContacts = await Contacts.countDocuments();
+        const totalPages = Math.ceil(totalContacts/limit); // ceil: làm tròn số
+
+        const contacts = await Contacts.find()
+            .sort({name: 1}) // sắp xếp theo tên asc
+            .skip((page - 1) * limit) // bỏ qua (ko find) contacts của trang trc
+            .limit(limit); // lấy contacts của page hiện tại
+        
+        const response = contacts.map(contact => ({
+            id: contact._id,
+            avatar: contact.avatar,
+            name: contact.name,
+            labels: contact.labels,
+            description: contact.description,
+            isFavorite: contact.isFavorite,
+        }));
+
+        const groupedContacts = {};
+        response.forEach(contact => {
+            const firstLetter = contact.name[0].toUpperCase();
+
+            if (!groupedContacts[firstLetter]) {
+                groupedContacts[firstLetter] = [];
+            }
+
+            groupedContacts[firstLetter].push(contact);
+        });
+
+        res.json({
+            totalContacts: totalContacts,
+            totalPages: totalPages,
+            currentPage: page,
+            contacts: groupedContacts
+        });
+    } catch (error) {
+        res.status(500).json({error: 'Internal Server Error' + error})
+    }
+}
 
 // GET: lấy dsach contacts có cùng năm sinh
 getContactsByYearOfBirth = async (req, res) => {
@@ -293,7 +353,9 @@ deleteAllContacts = async (req, res) => {
 // export ở đây
 module.exports = {
     getContacts,
+    getNumberOfContacts,
     getContactsGroupedByFirstLetter,
+    getContactsGroupedByFirstLetterPaginated,
     getContactsByYearOfBirth,
     getContactsByMonthOfBirth,
     getContactInformation,

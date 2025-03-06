@@ -16,7 +16,8 @@ class ChipItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return (label != 'Other') ?
+    Container(
       height: 15,
       decoration: BoxDecoration(
         color: (!isSelected) ? (label) {
@@ -30,7 +31,7 @@ class ChipItem extends StatelessWidget {
             case 'Neighborhood':
               return Colors.yellow.withOpacity(0.25);
             case 'Other':
-              return Colors.grey.withOpacity(0.25);
+              return Colors.transparent;
             // case '':
             //   return MyColors.textColor.withOpacity(0.25);
             default:
@@ -57,7 +58,7 @@ class ChipItem extends StatelessWidget {
                   case 'Neighborhood':
                     return Colors.yellow;
                   case 'Other':
-                    return MyColors.textColor.withOpacity(0.5);
+                    return Colors.transparent;
                   default:
                     return MyColors.textColor;
                 }
@@ -68,6 +69,6 @@ class ChipItem extends StatelessWidget {
           ),
         ),
       ),
-    );
+    ) : SizedBox();
   }
 }

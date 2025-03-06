@@ -56,7 +56,7 @@ const ContactSchema = new mongoose.Schema({
     labels: {
         type: [String],
         enum: ['Family', 'Friend', 'Neighborhood', 'Work', 'Other'],
-        default: 'Other',
+        default: [],
     },
     tags: [String],
     isFavorite: {type: Boolean, default: false},

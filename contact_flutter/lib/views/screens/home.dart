@@ -13,10 +13,8 @@ import '../components/contact_item.dart';
 class Home extends StatelessWidget {
   const Home({
     super.key,
-    this.numberOfContacts = 0,
+    // this.numberOfContacts = 0,
   });
-
-  final int numberOfContacts;
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +42,8 @@ class Home extends StatelessWidget {
               child: Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
-                  'DISPLAYED CONTACTS - $numberOfContacts',
+                  // 'DISPLAYED CONTACTS - ${homeVm.contactListModelMap.contacts.values.fold<int>(0, (int previousValue, List<ContactModel> element) => previousValue + element.length)}',
+                  'DISPLAYED CONTACTS - ${homeVm.totalContactsCount}',
                   style: TextStyle(
                     color: MyColors.white25,
                     fontSize: 12,
@@ -158,62 +157,85 @@ class Home extends StatelessWidget {
             ),
 
             // phần chính
-            Expanded(
-              child: SingleChildScrollView(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: Column(
-                    children: [
-                      !homeVm.isLoading ?
-                      ListView.builder(
-                        shrinkWrap: true,
-                        physics: NeverScrollableScrollPhysics(),
-                        itemCount: homeVm.contactListModelMap.contacts.length,
-                        itemBuilder: (context, index1) {
-                          final String contactGroup = homeVm.contactListModelMap.contacts.keys.elementAt(index1);
-                          final List<ContactModel> contacts = homeVm.contactListModelMap.contacts[contactGroup] ?? [];
-                          return Column(
-                            children: [
-                              Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 5),
-                                child: Align(
-                                  alignment: Alignment.centerLeft,
-                                  child: Text(
-                                    contactGroup.toString(), // LẤY ĐƯỢC RỒI
-                                    style: TextStyle(color: MyColors.white25),
-                                  ),
-                                ),
-                              ),
-                              ListView.builder(
+            Consumer<HomeVm>(builder: (context, homeVm, _) {
+              return Expanded(
+                child: SingleChildScrollView(
+                  controller: homeVm.scrollController,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: Column(
+                      children: [
+                        homeVm.contactListModelMap.contacts.isNotEmpty
+                            ? ListView.builder(
                                 shrinkWrap: true,
                                 physics: NeverScrollableScrollPhysics(),
-                                itemCount: contacts.length,
-                                padding: const EdgeInsets.only(bottom: 15),
-                                itemBuilder: (context, index2) {
-                                  final contact = contacts[index2];
-                                  return Padding(
-                                    padding:
-                                        const EdgeInsets.symmetric(vertical: 3),
-                                    child: ContactItem(
-                                      name: contact.name,
-                                      avatar: contact.avatar,
-                                      description: contact.description,
-                                      labels: contact.labels,
-                                    ),
+                                itemCount:
+                                    homeVm.contactListModelMap.contacts.length +
+                                        1,
+                                itemBuilder: (context, index1) {
+                                  if (index1 ==
+                                      homeVm.contactListModelMap.contacts
+                                          .length) {
+                                    return homeVm.isLoading
+                                        ? Center(
+                                            child: CircularProgressIndicator(),
+                                          )
+                                        : SizedBox.shrink();
+                                  }
+                                  final String contactGroup = homeVm
+                                      .contactListModelMap.contacts.keys
+                                      .elementAt(index1);
+                                  final List<ContactModel> contacts = homeVm
+                                          .contactListModelMap
+                                          .contacts[contactGroup] ??
+                                      [];
+                                  return Column(
+                                    children: [
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 5),
+                                        child: Align(
+                                          alignment: Alignment.centerLeft,
+                                          child: Text(
+                                            contactGroup
+                                                .toString(), // LẤY ĐƯỢC RỒI
+                                            style: TextStyle(
+                                                color: MyColors.white25),
+                                          ),
+                                        ),
+                                      ),
+                                      ListView.builder(
+                                        shrinkWrap: true,
+                                        physics: NeverScrollableScrollPhysics(),
+                                        itemCount: contacts.length,
+                                        padding:
+                                            const EdgeInsets.only(bottom: 15),
+                                        itemBuilder: (context, index2) {
+                                          final contact = contacts[index2];
+                                          return Padding(
+                                            padding: const EdgeInsets.symmetric(
+                                                vertical: 3),
+                                            child: ContactItem(
+                                              name: contact.name,
+                                              avatar: contact.avatar,
+                                              description: contact.description,
+                                              labels: contact.labels,
+                                            ),
+                                          );
+                                        },
+                                      ),
+                                    ],
                                   );
                                 },
-                              ),
-                            ],
-                          );
-                        },
-                      ) : Center(child: CircularProgressIndicator()),
-                      SizedBox(height: 60),
-                    ],
+                              )
+                            : Center(child: CircularProgressIndicator()),
+                        SizedBox(height: 60),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-            )
+              );
+            })
           ],
         ),
       ),
